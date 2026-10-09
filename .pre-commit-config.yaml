@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: nixbits-ci
+        name: nixbits checks
+        entry: task ci
+        language: system
+        pass_filenames: false
+        always_run: true

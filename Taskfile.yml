@@ -1,0 +1,28 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Run all checks
+    cmds:
+      - task: ci
+
+  fmt:
+    desc: Format Nix files
+    cmds:
+      - nixfmt default.nix flake.nix tests/smoke.nix
+
+  lint:
+    desc: Check Nix formatting
+    cmds:
+      - nixfmt --check default.nix flake.nix tests/smoke.nix
+
+  test:
+    desc: Evaluate the flake and build its smoke check
+    cmds:
+      - nix flake check
+
+  ci:
+    desc: Run formatting and flake checks
+    cmds:
+      - task: lint
+      - task: test
