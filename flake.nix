@@ -22,11 +22,12 @@
         );
     in
     {
-      lib.mkNodeLib = pkgs: import ./default.nix { inherit pkgs; };
+      lib = {
+        mkNodeLib = pkgs: import ./. { inherit pkgs; };
+        inherit (import ./. { inherit (nixpkgs) lib; }) parseEnvFile;
+      };
 
-      checks = eachSystem (pkgs: {
-        smoke = import ./tests/smoke.nix { inherit pkgs; };
-      });
+      checks = eachSystem (pkgs: import ./tests { inherit pkgs; });
 
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {

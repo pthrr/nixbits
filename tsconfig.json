@@ -1,0 +1,10 @@
+{
+  // For editors only: Node strips the types and nothing type checks. Every
+  // .ts file is a CommonJS module of its own, not a script sharing one global
+  // scope with the others.
+  "compilerOptions": {
+    "moduleDetection": "force",
+    "target": "esnext",
+    "noEmit": true
+  }
+}

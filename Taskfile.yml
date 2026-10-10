@@ -1,5 +1,9 @@
 version: '3'
 
+vars:
+  NIX_FILES:
+    sh: git ls-files --cached --others --exclude-standard '*.nix' | tr '\n' ' '
+
 tasks:
   default:
     desc: Run all checks
@@ -9,15 +13,15 @@ tasks:
   fmt:
     desc: Format Nix files
     cmds:
-      - nixfmt default.nix flake.nix tests/smoke.nix
+      - nixfmt {{.NIX_FILES}}
 
   lint:
     desc: Check Nix formatting
     cmds:
-      - nixfmt --check default.nix flake.nix tests/smoke.nix
+      - nixfmt --check {{.NIX_FILES}}
 
   test:
-    desc: Evaluate the flake and build its smoke check
+    desc: Evaluate the flake and build its checks
     cmds:
       - nix flake check
 

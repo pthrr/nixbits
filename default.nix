@@ -1,17 +1,11 @@
-{ pkgs }:
-
-let
-  prelude = ''
-    const { execFileSync } = require("child_process");
-
-    const HOME = process.env.HOME;
-    const run = (cmd, ...args) => execFileSync(cmd, args, { stdio: "inherit" });
-  '';
-in
+# Entry point for a plain import: `import ./nixbits { inherit pkgs; }`. Pass
+# only `lib` instead for the evaluation-time helpers before any pkgs exists.
 {
-  ts =
-    code:
-    "${pkgs.nodejs}/bin/node --experimental-strip-types ${
-      pkgs.writeText "nixbits-script.ts" (prelude + code)
-    }";
+  pkgs ? throw "nixbits: pass pkgs to use ts and tsWithEnv",
+  lib ? pkgs.lib,
+}:
+rec {
+  parseEnvFile = import ./src/parse-env-file.nix { inherit lib; };
+  ts = import ./src/ts.nix { inherit pkgs; };
+  tsWithEnv = import ./src/ts-with-env.nix { inherit pkgs ts; };
 }
