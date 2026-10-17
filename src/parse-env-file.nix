@@ -35,8 +35,11 @@ let
       { }
     else
       let
-        noExport = builtins.replaceStrings [ "export " ] [ "" ] line;
-        match = builtins.match " *([A-Za-z_][A-Za-z0-9_]*) *= *(.*)" noExport;
+        # Match the leading `export ` keyword itself rather than stripping
+        # every "export " substring, which mangled a value containing one.
+        exported = builtins.match " *export +([A-Za-z_][A-Za-z0-9_]*) *= *(.*)" line;
+        match =
+          if exported != null then exported else builtins.match " *([A-Za-z_][A-Za-z0-9_]*) *= *(.*)" line;
       in
       if match == null then
         { }
