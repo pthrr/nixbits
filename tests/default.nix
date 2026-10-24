@@ -23,14 +23,19 @@ let
   # relative requires resolve. Tools come in through the environment.
   preludeTest =
     name:
-    pkgs.runCommand "nixbits-prelude-${name}" { HTPASSWD = "${pkgs.apacheHttpd}/bin/htpasswd"; } ''
-      mkdir -p src tests/prelude
-      ln -s ${prelude.modules} src/prelude
-      cp ${./prelude + "/${name}.test.ts"} tests/prelude/${name}.test.ts
-      ${pkgs.nodejs}/bin/node --experimental-strip-types --disable-warning=ExperimentalWarning \
-        --test tests/prelude/${name}.test.ts
-      touch $out
-    '';
+    pkgs.runCommand "nixbits-prelude-${name}"
+      {
+        HTPASSWD = "${pkgs.apacheHttpd}/bin/htpasswd";
+        TZDIR = "${pkgs.tzdata}/share/zoneinfo";
+      }
+      ''
+        mkdir -p src tests/prelude
+        ln -s ${prelude.modules} src/prelude
+        cp ${./prelude + "/${name}.test.ts"} tests/prelude/${name}.test.ts
+        ${pkgs.nodejs}/bin/node --experimental-strip-types --disable-warning=ExperimentalWarning \
+          --test tests/prelude/${name}.test.ts
+        touch $out
+      '';
 in
 assert lib.assertMsg (untested == [ ]) "prelude modules without a test: ${toString untested}";
 nixTests

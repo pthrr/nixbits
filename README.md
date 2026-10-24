@@ -39,8 +39,11 @@ in [src/prelude](src/prelude), named after the global and documented there.
 | `requireEnv`         | an environment variable, or an error naming it                           |
 | `chown`              | chown(1)-style `user:group`, names resolved through NSS (getent)         |
 | `writeFileAtomic`    | temp file, mode and owner set on the descriptor, rename; never follows   |
+| `environmentFile`    | systemd EnvironmentFile text, quoted so systemd and a shell read it alike |
 | `htpasswdEntry`      | bcrypt htpasswd line at a given cost; takes the `htpasswd` binary's path |
 | `sha256File`         | hex SHA-256 of a file of any size                                        |
+| `sha256sumLine`      | the line `sha256sum FILE` prints, so `sha256sum -c` checks a manifest    |
+| `localDate`          | YYYYMMDD in local time, as `date +%Y%m%d`                                |
 | `retry`              | up to N attempts of a sync or async check, a fixed delay apart           |
 | `httpOk`             | whether a URL answers below 400, as `curl -sf` judges it                 |
 
