@@ -22,11 +22,6 @@
         );
     in
     {
-      lib = {
-        mkNodeLib = pkgs: import ./. { inherit pkgs; };
-        inherit (import ./. { inherit (nixpkgs) lib; }) parseEnvFile;
-      };
-
       checks = eachSystem (pkgs: import ./tests { inherit pkgs; });
 
       devShells = eachSystem (pkgs: {
@@ -36,6 +31,7 @@
             pre-commit
             nixfmt
             nodejs
+            watchexec
           ];
         };
       });

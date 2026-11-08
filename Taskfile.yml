@@ -3,30 +3,47 @@ version: '3'
 vars:
   NIX_FILES:
     sh: git ls-files --cached --others --exclude-standard '*.nix' | tr '\n' ' '
+  SYSTEM:
+    sh: nix eval --impure --raw --expr builtins.currentSystem
 
 tasks:
   default:
-    desc: Run all checks
+    desc: List all tasks
+    silent: true
     cmds:
-      - task: ci
+      - task --list-all
 
-  fmt:
-    desc: Format Nix files
+  update:
+    desc: Bump every flake input to its newest version
     cmds:
-      - nixfmt {{.NIX_FILES}}
-
-  lint:
-    desc: Check Nix formatting
-    cmds:
-      - nixfmt --check {{.NIX_FILES}}
+      - nix flake update
 
   test:
-    desc: Evaluate the flake and build its checks
+    desc: Rerun the tests on every change
     cmds:
-      - nix flake check
+      - watchexec --restart -- task test:pre
+
+  test:pre:
+    desc: Build this system's checks, which are the tests
+    vars:
+      CHECKS:
+        sh: >-
+          nix eval --raw '.#checks.{{.SYSTEM}}' --apply 'checks: toString (builtins.attrNames checks)'
+    cmds:
+      - >-
+        nix build --no-link
+        {{range $check := splitList " " .CHECKS}}'.#checks.{{$.SYSTEM}}.{{$check}}' {{end}}
+
+  pre:
+    desc: Check formatting and run the tests (pre-commit)
+    cmds:
+      # The one format check. Neovim formats each file on save; this catches
+      # files that never went through it, such as an agent's edits.
+      - nixfmt --check {{.NIX_FILES}}
+      - task: test:pre
 
   ci:
-    desc: Run formatting and flake checks
+    desc: Run pre and check every flake output
     cmds:
-      - task: lint
-      - task: test
+      - task: pre
+      - nix flake check

@@ -53,8 +53,9 @@ prelude declares nothing else at top level, so a script is free to
 `const fs = require("fs")` and the like. Only getent enters a script's closure
 through it; tools such as `htpasswd` are passed in by the caller.
 
-For a flake consumer, use `inputs.nixbits.lib.mkNodeLib pkgs`. The helper uses
-the consumer's `pkgs`; the flake's pinned `nixpkgs` input is used only for its
+A flake consumer keeps nixbits as a git submodule, includes it in its own source
+with `inputs.self.submodules = true;`, and imports the directory as above with
+its own `pkgs`. The flake's pinned `nixpkgs` input is used only for its
 development shell and checks.
 
 ## Env files at evaluation time
@@ -66,8 +67,6 @@ quotes. It needs only `lib`, so it is also available before any `pkgs` exists:
 ```nix
 (import ./nixbits { inherit (nixpkgs) lib; }).parseEnvFile ./app.env
 ```
-
-The flake's `lib.parseEnvFile` is the same function.
 
 ## Layout
 
